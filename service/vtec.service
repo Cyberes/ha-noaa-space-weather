@@ -1,0 +1,14 @@
+[Unit]
+Description=Space Weather VTEC
+After=network.target
+
+[Service]
+Type=simple
+User=homeassistant
+EnvironmentFile=/etc/secrets/space-weather
+ExecStart=/srv/space-weather/venv/bin/python /srv/space-weather/ha-noaa-space-weather-sensor/main.py
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
