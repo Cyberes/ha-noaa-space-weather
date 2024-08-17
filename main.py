@@ -59,8 +59,8 @@ def main():
         for tecmap, epoch in get_tecmaps(ionex_data):
             avg_tec = np.mean(plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)]))
             tec_data.append(avg_tec)
-        daily_avg = round(np.mean(tec_data), 1)
-        publish('vtec', daily_avg)
+        latest = round(tec_data[-1], 1)
+        publish('vtec', latest)
         time.sleep(1800)
 
 
