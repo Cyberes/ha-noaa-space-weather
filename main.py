@@ -2,12 +2,13 @@ import logging
 import os
 import sys
 import time
+from datetime import datetime
 
 import numpy as np
 import paho.mqtt.client as mqtt
 
 from lib.cddis_fetch import fetch_latest_ionex
-from lib.tecmap import get_tecmaps, plot_tec_map
+from lib.tecmap import get_tecmaps, plot_tec_map, parse_ionex_datetime
 
 logging.basicConfig(level=logging.INFO)
 
@@ -35,7 +36,6 @@ if not CDDIS_USERNAME or not CDDIS_PASSWORD:
 client = mqtt.Client(client_id=MQTT_CLIENT_ID)
 if MQTT_USERNAME and MQTT_PASSWORD:
     client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
-    logging.info("Username and password set.")
 client.will_set(MQTT_TOPIC_PREFIX + "/status", payload="Offline", qos=1, retain=True)  # set LWT
 client.connect(MQTT_BROKER_HOST, port=MQTT_BROKER_PORT)
 client.loop_start()
@@ -48,18 +48,23 @@ def publish(topic: str, msg):
     if status == 0:
         logging.info(f"Sent {msg} to topic {topic_expanded}")
     else:
-        logging.error(f"Failed to send message to topic {topic_expanded}")
+        logging.error(f"Failed to send message to topic {topic_expanded}: {result}")
 
 
 def main():
     while True:
+        # TODO: tick every second and execute runs if it's time.
+        # TODO: get TEC map every 15 min and serve from URL https://services.swpc.noaa.gov/images/animations/natec-ustec/ustec_tec/latest.png?time=1716232652000
+        utc_hr = datetime.utcnow().hour
         logging.info('Fetching latest IONEX data')
+        logging.info(f'Using hour {utc_hr}')
         ionex_data = fetch_latest_ionex(CDDIS_USERNAME, CDDIS_PASSWORD)
-        tec_data = []
+        avg_tec = None
         for tecmap, epoch in get_tecmaps(ionex_data):
-            avg_tec = np.mean(plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)]))
-            tec_data.append(avg_tec)
-        latest = round(tec_data[-1], 1)
+            if parse_ionex_datetime(epoch).hour == utc_hr:
+                avg_tec = np.mean(plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)]))
+                break
+        latest = round(avg_tec, 1)
         publish('vtec', latest)
         time.sleep(1800)
 

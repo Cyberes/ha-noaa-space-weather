@@ -54,3 +54,5 @@ Unit: `(10^16 el) / m^2`
 VTEC, or Vertical TEC, is a specific type of TEC measurement that is taken along a path extending
 vertically from the Earth's surface to the edge of the atmosphere. So essentially, VTEC is a subset of TEC, with the
 difference lying in the specific path along which the measurement is taken.
+
+Updated hourly.

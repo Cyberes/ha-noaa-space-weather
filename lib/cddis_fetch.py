@@ -1,4 +1,5 @@
 import datetime
+import logging
 import subprocess
 import sys
 import tempfile
@@ -43,7 +44,9 @@ def fetch_latest_ionex(username: str, password: str):
     day_urls = [element.get_attribute('href') for element in day_elements]
 
     # Load the latest day.
-    driver.get(day_urls[-1])
+    today_url = day_urls[-2]  # last element is predictions for tomorrow so we want the second to last one
+    logging.info(f'Using day {today_url.split("/")[-1]}')
+    driver.get(today_url)
 
     # Find our file.
     file_elements = driver.find_elements(By.XPATH, '//a[@class="archiveItemText"]')
