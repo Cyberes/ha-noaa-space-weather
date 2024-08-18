@@ -29,6 +29,7 @@ class SpaceWeatherPredictionCard extends HTMLElement {
         .prediction-item {
           text-align: center;
           margin-bottom: 16px;
+          cursor: pointer;
         }
 
         .prediction-label {
@@ -66,9 +67,16 @@ class SpaceWeatherPredictionCard extends HTMLElement {
         .card-header {
           font-size: 20px;
           font-weight: bold;
-          padding: 16px;
+          padding: 0 16px 2px 16px;
+          text-align: center;
+        }
+        
+        .card-subheader {
+          padding: 0 16px 16px 16px;
           margin-bottom: 16px;
           text-align: center;
+          font-style: italic;
+          font-size: 15px;
         }
         
         .scale-value {
@@ -87,9 +95,12 @@ class SpaceWeatherPredictionCard extends HTMLElement {
 
       <ha-card>
         <div class="card-header">Space Weather Predictions</div>
+        <div class="card-subheader">
+            ${this._getStateValue('sensor.space_weather_prediction_date_stamp')}
+        </div>
         <div class="card-content">
           <div class="prediction-container">
-            <div class="prediction-item">
+            <div class="prediction-item" data-entity-id="sensor.space_weather_prediction_r_minorprob">
               <div class="prediction-label">R1-R2</div>
               <!-- TODO: what happens when "Scale" in JSON is not null? -->
               <!-- TODO: what happens when "Text" in JSON is not null? -->
@@ -97,7 +108,7 @@ class SpaceWeatherPredictionCard extends HTMLElement {
                 ${Math.round(parseFloat(this._getStateValue('sensor.space_weather_prediction_r_minorprob')))}%
               </div>
             </div>
-            <div class="prediction-item">
+            <div class="prediction-item" data-entity-id="sensor.space_weather_prediction_r_majorprob">
               <div class="prediction-label">R3-R5</div>
               <!-- TODO: what happens when "Scale" in JSON is not null? -->
               <!-- TODO: what happens when "Text" in JSON is not null? -->
@@ -105,7 +116,7 @@ class SpaceWeatherPredictionCard extends HTMLElement {
                 ${Math.round(parseFloat(this._getStateValue('sensor.space_weather_prediction_r_majorprob')))}%
               </div>
             </div>
-            <div class="prediction-item">
+            <div class="prediction-item" data-entity-id="sensor.space_weather_prediction_s_prob">
               <div class="prediction-label">S1 or Greater</div>
               <!-- TODO: what happens when "Scale" in JSON is not null? -->
               <!-- TODO: what happens when "Text" in JSON is not null? -->
@@ -116,10 +127,10 @@ class SpaceWeatherPredictionCard extends HTMLElement {
             <!-- <div class="prediction-item">
               <div class="prediction-label">S Probability</div>
               <div class="prediction-value">
-                ${this._getStateValue('sensor.space_weather_prediction_s_scale')}
+                    ${this._getStateValue('sensor.space_weather_prediction_s_scale')}
               </div>
             </div> -->
-            <div class="prediction-item">
+            <div class="prediction-item" data-entity-id="sensor.space_weather_prediction_g_scale">
               <div class="prediction-label">G Scale</div>
               <div class="prediction-value scale-value noaa_scale_bg_${this._getStateValue('sensor.space_weather_prediction_g_scale')}">
                 G${this._getStateValue('sensor.space_weather_prediction_g_scale')}
@@ -129,11 +140,17 @@ class SpaceWeatherPredictionCard extends HTMLElement {
         </div>
       </ha-card>
     `;
+        this._attachClickListeners();
     }
 
     _getStateValue(entityId) {
         const state = this._hass.states[entityId];
         return state ? state.state : '';
+    }
+
+    _getAttribute(entityId, attribute) {
+        const state = this._hass.states[entityId];
+        return state ? state.attributes[attribute] : '';
     }
 
     _getNumericState(entityId) {
@@ -143,6 +160,22 @@ class SpaceWeatherPredictionCard extends HTMLElement {
 
     getCardSize() {
         return 5;
+    }
+
+    _attachClickListeners() {
+        const scaleItems = this.shadowRoot.querySelectorAll('.prediction-item');
+        scaleItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const entityId = item.dataset.entityId;
+                this._handleClick(entityId);
+            });
+        });
+    }
+
+    _handleClick(entityId) {
+        const event = new Event('hass-more-info', {composed: true});
+        event.detail = {entityId};
+        this.dispatchEvent(event);
     }
 }
 

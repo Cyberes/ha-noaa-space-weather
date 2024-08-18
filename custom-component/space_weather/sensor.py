@@ -1,10 +1,7 @@
 import logging
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 import aiohttp
-import homeassistant.helpers.config_validation as cv
-import voluptuous as vol
-from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
@@ -14,23 +11,19 @@ _LOGGER = logging.getLogger(__name__)
 CONF_URL = "https://services.swpc.noaa.gov/products/noaa-scales.json"
 SCAN_INTERVAL = timedelta(minutes=30)
 
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Optional("url", default=CONF_URL): cv.string,
-})
-
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    url = config.get("url")
     session = async_get_clientsession(hass)
     async_add_entities([
-        SpaceWeatherScaleSensor(session, url, "R"),
-        SpaceWeatherScaleSensor(session, url, "S"),
-        SpaceWeatherScaleSensor(session, url, "G"),
-        SpaceWeatherPredictionSensor(session, url, "R", "MinorProb", "pred_r_minor"),
-        SpaceWeatherPredictionSensor(session, url, "R", "MajorProb", "pred_r_major"),
-        SpaceWeatherPredictionSensor(session, url, "S", "Scale", "pred_s_scale"),
-        SpaceWeatherPredictionSensor(session, url, "S", "Prob", "pred_s_prob"),
-        SpaceWeatherPredictionSensor(session, url, "G", "Scale", "pred_g_scale"),
+        SpaceWeatherScaleSensor(session, CONF_URL, "R"),
+        SpaceWeatherScaleSensor(session, CONF_URL, "S"),
+        SpaceWeatherScaleSensor(session, CONF_URL, "G"),
+        SpaceWeatherPredictionSensor(session, CONF_URL, "R", "MinorProb", "pred_r_minor"),
+        SpaceWeatherPredictionSensor(session, CONF_URL, "R", "MajorProb", "pred_r_major"),
+        SpaceWeatherPredictionSensor(session, CONF_URL, "S", "Scale", "pred_s_scale"),
+        SpaceWeatherPredictionSensor(session, CONF_URL, "S", "Prob", "pred_s_prob"),
+        SpaceWeatherPredictionSensor(session, CONF_URL, "G", "Scale", "pred_g_scale"),
+        SpaceWeatherDateStampSensor(session, CONF_URL),
     ], True)
 
 
@@ -129,8 +122,63 @@ class SpaceWeatherPredictionSensor(Entity):
             async with self._session.get(self._url) as response:
                 if response.status == 200:
                     data = await response.json()
-                    self._data = data["1"]
+                    now = datetime.now() + timedelta(days=1)
+                    tomorrow_date = now.strftime('%Y-%m-%d')
+                    tomorrow_data = {}
+                    for k, v in data.items():
+                        datestamp = v['DateStamp']
+                        if datestamp == tomorrow_date:
+                            tomorrow_data = v
+                    assert len(tomorrow_data.keys()) is not None
+                    self._data = tomorrow_data
                     self._state = self._data[self._scale_key][self._pred_key]
+                else:
+                    _LOGGER.error(f"Error fetching data from {self._url}")
+        except aiohttp.ClientError as err:
+            _LOGGER.error(f"Error fetching data from {self._url}: {err}")
+
+
+class SpaceWeatherDateStampSensor(Entity):
+    """
+    Attributes don't seem to be working so we use a single sensor to track the timestamp of the space weather
+    prediction updated.
+    """
+
+    def __init__(self, session, url):
+        self._session = session
+        self._url = url
+        self._name = "Space Weather Prediction Date Stamp"
+        self._state = None
+        self._data = None
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def unique_id(self):
+        return "space_weather_prediction_date_stamp"
+
+    @property
+    def state(self):
+        return self._state
+
+    @Throttle(SCAN_INTERVAL)
+    async def async_update(self):
+        try:
+            async with self._session.get(self._url) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    now = datetime.now() + timedelta(days=1)
+                    tomorrow_date = now.strftime('%Y-%m-%d')
+                    tomorrow_data = {}
+                    for k, v in data.items():
+                        datestamp = v['DateStamp']
+                        if datestamp == tomorrow_date:
+                            tomorrow_data = v
+                    assert len(tomorrow_data.keys()) is not None
+                    self._data = tomorrow_data
+                    self._state = datetime.strptime(f'{self._data["DateStamp"]} {self._data["TimeStamp"]}', "%Y-%m-%d %H:%M:%S").strftime('%m-%d-%Y %H:%M')
                 else:
                     _LOGGER.error(f"Error fetching data from {self._url}")
         except aiohttp.ClientError as err:
