@@ -1,4 +1,4 @@
-class SpaceWeatherCard extends HTMLElement {
+class SpaceWeather24hrMaxCard extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
@@ -83,35 +83,32 @@ class SpaceWeatherCard extends HTMLElement {
 
       <ha-card>
         <div class="card-header">
-            <a href="https://www.spaceweather.gov/noaa-scales-explanation" target="_blank">Space Weather Conditions</a>
+            <a href="https://www.spaceweather.gov/noaa-scales-explanation" target="_blank">Space Weather 24-Hour Maximums</a>
         </div>
         <div class="card-content">
           <div class="scale-container">
-            <div class="scale-item" data-entity-id="sensor.space_weather_scale_r">
-<!--              <div class="scale-label">R Scale</div>-->
-            <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_r')}">
-              ${this._getStateValue('sensor.space_weather_scale_r')}
+            <div class="scale-item" data-entity-id="sensor.space_weather_scale_r_24hr">
+            <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_r_24hr')}">
+              ${this._getStateValue('sensor.space_weather_scale_r_24hr')}
             </div>
               <div class="scale-text">
-                ${this._getStateAttribute('sensor.space_weather_scale_r', 'text')}
+                ${this._getStateAttribute('sensor.space_weather_scale_r_24hr', 'text')}
               </div>
             </div>
-            <div class="scale-item" data-entity-id="sensor.space_weather_scale_s">
-<!--              <div class="scale-label">S Scale</div>-->
-            <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_s')}">
-              ${this._getStateValue('sensor.space_weather_scale_s')}
+            <div class="scale-item" data-entity-id="sensor.space_weather_scale_s_24hr">
+            <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_s_24hr')}">
+              ${this._getStateValue('sensor.space_weather_scale_s_24hr')}
             </div>
               <div class="scale-text">
-                ${this._getStateAttribute('sensor.space_weather_scale_s', 'text')}
+                ${this._getStateAttribute('sensor.space_weather_scale_s_24hr', 'text')}
               </div>
             </div>
-            <div class="scale-item" data-entity-id="sensor.space_weather_scale_g">
-<!--              <div class="scale-label">G Scale</div>-->
-            <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_g')}">
-              ${this._getStateValue('sensor.space_weather_scale_g')}
+            <div class="scale-item" data-entity-id="sensor.space_weather_scale_g_24hr">
+            <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_g_24hr')}">
+              ${this._getStateValue('sensor.space_weather_scale_g_24hr')}
             </div>
               <div class="scale-text">
-                ${this._getStateAttribute('sensor.space_weather_scale_g', 'text')}
+                ${this._getStateAttribute('sensor.space_weather_scale_g_24hr', 'text')}
               </div>
             </div>
           </div>
@@ -157,4 +154,4 @@ class SpaceWeatherCard extends HTMLElement {
     }
 }
 
-customElements.define('space-weather-card-current', SpaceWeatherCard);
+customElements.define('space-weather-card-24hr-max', SpaceWeather24hrMaxCard);

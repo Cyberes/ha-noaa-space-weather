@@ -15,9 +15,12 @@ SCAN_INTERVAL = timedelta(minutes=30)
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     session = async_get_clientsession(hass)
     async_add_entities([
-        SpaceWeatherScaleSensor(session, CONF_URL, "R"),
-        SpaceWeatherScaleSensor(session, CONF_URL, "S"),
-        SpaceWeatherScaleSensor(session, CONF_URL, "G"),
+        SpaceWeatherScaleSensor(session, CONF_URL, "R", '0', ''),
+        SpaceWeatherScaleSensor(session, CONF_URL, "S", '0', ''),
+        SpaceWeatherScaleSensor(session, CONF_URL, "G", '0', ''),
+        SpaceWeatherScaleSensor(session, CONF_URL, "R", '-1', '_24hr'),
+        SpaceWeatherScaleSensor(session, CONF_URL, "S", '-1', '_24hr'),
+        SpaceWeatherScaleSensor(session, CONF_URL, "G", '-1', '_24hr'),
         SpaceWeatherPredictionSensor(session, CONF_URL, "R", "MinorProb", "pred_r_minor"),
         SpaceWeatherPredictionSensor(session, CONF_URL, "R", "MajorProb", "pred_r_major"),
         SpaceWeatherPredictionSensor(session, CONF_URL, "S", "Scale", "pred_s_scale"),
@@ -28,13 +31,15 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 
 
 class SpaceWeatherScaleSensor(Entity):
-    def __init__(self, session, url, scale_key):
+    def __init__(self, session, url, scale_key, data_selector, trailing):
         self._session = session
         self._url = url
         self._scale_key = scale_key
-        self._name = f'Space Weather Scale {scale_key}'
+        self._name = f'Space Weather Scale {scale_key} {trailing}'
         self._state = None
         self._data = None
+        self._data_selector = data_selector
+        self._trailing = trailing
 
     @property
     def name(self):
@@ -42,7 +47,7 @@ class SpaceWeatherScaleSensor(Entity):
 
     @property
     def unique_id(self):
-        return f"space_weather_scale_{self._scale_key.lower()}"
+        return f"space_weather_scale_{self._scale_key.lower()}{self._trailing.replace('_', '')}"
 
     @property
     def state(self):
@@ -63,7 +68,7 @@ class SpaceWeatherScaleSensor(Entity):
             async with self._session.get(self._url) as response:
                 if response.status == 200:
                     data = await response.json()
-                    self._data = data["-1"]
+                    self._data = data[self._data_selector]
                     self._state = f'{self._scale_key}{self._data[self._scale_key]["Scale"]}'
                 else:
                     _LOGGER.error(f"Error fetching data from {self._url}")
@@ -178,7 +183,7 @@ class SpaceWeatherDateStampSensor(Entity):
                             tomorrow_data = v
                     assert len(tomorrow_data.keys()) is not None
                     self._data = tomorrow_data
-                    self._state = datetime.strptime(f'{self._data["DateStamp"]} {self._data["TimeStamp"]}', "%Y-%m-%d %H:%M:%S").strftime('%m-%d-%Y %H:%M')
+                    self._state = datetime.strptime(f'{self._data["DateStamp"]}', "%Y-%m-%d").strftime('%m-%d-%Y')
                 else:
                     _LOGGER.error(f"Error fetching data from {self._url}")
         except aiohttp.ClientError as err:

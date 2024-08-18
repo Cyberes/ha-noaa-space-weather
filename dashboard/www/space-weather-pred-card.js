@@ -20,15 +20,17 @@ class SpaceWeatherPredictionCard extends HTMLElement {
       <style>
       /* TODO: unify this with the other card */
       
-        .prediction-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
+      .prediction-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        align-items: center;
+        justify-items: center;
+      }
 
         .prediction-item {
           text-align: center;
-          margin-bottom: 16px;
+          /*margin-bottom: 16px;*/
           cursor: pointer;
         }
 
@@ -96,7 +98,7 @@ class SpaceWeatherPredictionCard extends HTMLElement {
       <ha-card>
         <div class="card-header">Space Weather Predictions</div>
         <div class="card-subheader">
-            ${this._getStateValue('sensor.space_weather_prediction_date_stamp')}
+            For ${this._getStateValue('sensor.space_weather_prediction_date_stamp')}
         </div>
         <div class="card-content">
           <div class="prediction-container">
@@ -179,4 +181,4 @@ class SpaceWeatherPredictionCard extends HTMLElement {
     }
 }
 
-customElements.define('space-weather-prediction-card', SpaceWeatherPredictionCard);
+customElements.define('space-weather-prediction-card-1day', SpaceWeatherPredictionCard);
