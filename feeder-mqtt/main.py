@@ -43,12 +43,17 @@ client.loop_start()
 
 def publish(topic: str, msg):
     topic_expanded = MQTT_TOPIC_PREFIX + '/' + topic
-    result = client.publish(topic_expanded, msg)
-    status = result[0]
-    if status == 0:
-        logging.info(f"Sent {msg} to topic {topic_expanded}")
-    else:
-        logging.error(f"Failed to send message to topic {topic_expanded}: {result}")
+    retries = 10
+    for i in range(retries):  # retry
+        result = client.publish(topic_expanded, msg)
+        status = result[0]
+        if status == 0:
+            logging.info(f"Sent {msg} to topic {topic_expanded}")
+            return
+        else:
+            logging.warning(f"Failed to send message to topic {topic_expanded}: {result}. Retry {i + 1}/{retries}")
+            time.sleep(10)
+    logging.error(f"Failed to send message to topic {topic_expanded}.")
 
 
 def main():
