@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=homeassistant
 EnvironmentFile=/etc/secrets/space-weather
-ExecStart=/srv/space-weather/ha-noaa-space-weather-sensor/venv/bin/python /srv/space-weather/ha-noaa-space-weather-sensor/main.py
+ExecStart=/srv/space-weather/ha-noaa-space-weather-sensor/venv/bin/python /srv/space-weather/ha-noaa-space-weather-sensor/feeder-mqtt/main.py
 Restart=on-failure
 RestartSec=5s
 
