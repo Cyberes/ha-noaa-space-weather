@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import threading
 import time
 from datetime import datetime
 
@@ -56,7 +57,24 @@ def publish(topic: str, msg):
     logging.error(f'Failed to send message to topic {topic_expanded}.')
 
 
-def main():
+class DataCache:
+    def __init__(self):
+        self.value = None
+        self.lock = threading.Lock()
+
+    def update(self, new_value):
+        with self.lock:
+            self.value = new_value
+
+    def get(self):
+        with self.lock:
+            return self.value
+
+
+cached_data = DataCache()
+
+
+def update_cache():
     while True:
         utc_hr = datetime.utcnow().hour
         logging.info('Fetching latest IONEX data')
@@ -70,9 +88,21 @@ def main():
                 logging.info(f'Data timestamp: {parsed_dt.isoformat()}')
                 break
         latest = round(avg_tec, 1)
-        publish('vtec', latest)
+        cached_data.update(latest)
+        logging.info(f'Latest value: {latest}')
+        time.sleep(1800)  # 30 minutes
+
+
+def publish_cache():
+    while True:
+        latest = cached_data.get()
+        if latest is not None:
+            publish('vtec', latest)
         time.sleep(60)
 
 
 if __name__ == '__main__':
-    main()
+    threading.Thread(target=update_cache).start()
+    threading.Thread(target=publish_cache).start()
+    while True:
+        time.sleep(3600)
