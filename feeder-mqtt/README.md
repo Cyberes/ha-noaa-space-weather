@@ -34,11 +34,12 @@ An example systemd service file is provided.
 ### Home Assistant MQTT Config
 
 ```yaml
-- state_topic: "space-weather/vtec"
-  name: "VTEC"
-  unit_of_measurement: "(10^16 el) / m^2"
-  state_class: measurement
-  unique_id: space_weather_vtec
+mqtt:
+  - state_topic:         "space-weather/vtec"
+    name:                "VTEC"
+    unit_of_measurement: "(10^16 el) / m^2"
+    state_class:         measurement
+    unique_id:           space_weather_vtec
 ```
 
 ## Data
