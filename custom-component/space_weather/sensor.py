@@ -8,35 +8,35 @@ from homeassistant.util import Throttle
 
 _LOGGER = logging.getLogger(__name__)
 
-SCALES_URL = "https://services.swpc.noaa.gov/products/noaa-scales.json"
+SCALES_URL = 'https://services.swpc.noaa.gov/products/noaa-scales.json'
 SCAN_INTERVAL = timedelta(minutes=5)
 
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     session = async_get_clientsession(hass)
     async_add_entities([
-        SpaceWeatherScaleSensor(session, "R", '0', None),
-        SpaceWeatherScaleSensor(session, "S", '0', None),
-        SpaceWeatherScaleSensor(session, "G", '0', None),
-        SpaceWeatherScaleSensor(session, "R", '-1', '24hr_max'),
-        SpaceWeatherScaleSensor(session, "S", '-1', '24hr_max'),
-        SpaceWeatherScaleSensor(session, "G", '-1', '24hr_max'),
+        SpaceWeatherScaleSensor(session, 'R', '0', None),
+        SpaceWeatherScaleSensor(session, 'S', '0', None),
+        SpaceWeatherScaleSensor(session, 'G', '0', None),
+        SpaceWeatherScaleSensor(session, 'R', '-1', '24hr_max'),
+        SpaceWeatherScaleSensor(session, 'S', '-1', '24hr_max'),
+        SpaceWeatherScaleSensor(session, 'G', '-1', '24hr_max'),
 
-        SpaceWeatherPredictionSensor(session, "R", "MinorProb", "1", 'today'),
-        SpaceWeatherPredictionSensor(session, "R", "MajorProb", "1", 'today'),
-        SpaceWeatherPredictionSensor(session, "S", "Scale", "1", 'today'),
-        SpaceWeatherPredictionSensor(session, "S", "Prob", "1", 'today'),
-        SpaceWeatherPredictionSensor(session, "G", "Scale", "1", 'today'),
-        SpaceWeatherPredictionSensor(session, "R", "MinorProb", "2", '1day'),
-        SpaceWeatherPredictionSensor(session, "R", "MajorProb", "2", '1day'),
-        SpaceWeatherPredictionSensor(session, "S", "Scale", "2", '1day'),
-        SpaceWeatherPredictionSensor(session, "S", "Prob", "2", '1day'),
-        SpaceWeatherPredictionSensor(session, "G", "Scale", "2", '1day'),
-        SpaceWeatherPredictionSensor(session, "R", "MinorProb", "3", '2day'),
-        SpaceWeatherPredictionSensor(session, "R", "MajorProb", "3", '2day'),
-        SpaceWeatherPredictionSensor(session, "S", "Scale", "3", '2day'),
-        SpaceWeatherPredictionSensor(session, "S", "Prob", "3", '2day'),
-        SpaceWeatherPredictionSensor(session, "G", "Scale", "3", '2day'),
+        SpaceWeatherPredictionSensor(session, 'R', 'MinorProb', '1', 'today'),
+        SpaceWeatherPredictionSensor(session, 'R', 'MajorProb', '1', 'today'),
+        SpaceWeatherPredictionSensor(session, 'S', 'Scale', '1', 'today'),
+        SpaceWeatherPredictionSensor(session, 'S', 'Prob', '1', 'today'),
+        SpaceWeatherPredictionSensor(session, 'G', 'Scale', '1', 'today'),
+        SpaceWeatherPredictionSensor(session, 'R', 'MinorProb', '2', '1day'),
+        SpaceWeatherPredictionSensor(session, 'R', 'MajorProb', '2', '1day'),
+        SpaceWeatherPredictionSensor(session, 'S', 'Scale', '2', '1day'),
+        SpaceWeatherPredictionSensor(session, 'S', 'Prob', '2', '1day'),
+        SpaceWeatherPredictionSensor(session, 'G', 'Scale', '2', '1day'),
+        SpaceWeatherPredictionSensor(session, 'R', 'MinorProb', '3', '2day'),
+        SpaceWeatherPredictionSensor(session, 'R', 'MajorProb', '3', '2day'),
+        SpaceWeatherPredictionSensor(session, 'S', 'Scale', '3', '2day'),
+        SpaceWeatherPredictionSensor(session, 'S', 'Prob', '3', '2day'),
+        SpaceWeatherPredictionSensor(session, 'G', 'Scale', '3', '2day'),
 
         PlanetaryKIndexSensor(session)
     ], True)
@@ -49,7 +49,7 @@ class SpaceWeatherScaleSensor(Entity):
 
         self._name = f'Space Weather Scale {scale_key}'
         if trailing is not None and len(trailing):
-            self._name = self._name + ' ' + trailing.replace("_", " ").replace("  ", " ")
+            self._name = self._name + ' ' + trailing.replace('_', ' ').replace('  ', ' ')
 
         self._data = None
         assert isinstance(data_selector, str)
@@ -62,7 +62,7 @@ class SpaceWeatherScaleSensor(Entity):
 
     @property
     def unique_id(self):
-        s = f"space_weather_scale_{self._scale_key.lower()}"
+        s = f'space_weather_scale_{self._scale_key.lower()}'
         if self._trailing is not None and len(self._trailing):
             s = s + '_' + self._trailing.strip('_')
         return s
@@ -75,9 +75,9 @@ class SpaceWeatherScaleSensor(Entity):
     def extra_state_attributes(self):
         if self._data:
             return {
-                "scale_int": int(self._data[self._scale_key]["Scale"]),
-                "text": self._data[self._scale_key]["Text"],
-                "timestamp": datetime.fromisoformat(self._data["DateStamp"] + 'T' + self._data["TimeStamp"] + '+00:00').isoformat()
+                'scale_int': int(self._data[self._scale_key]['Scale']),
+                'text': self._data[self._scale_key]['Text'],
+                'timestamp': datetime.fromisoformat(self._data["DateStamp"] + 'T' + self._data["TimeStamp"] + '+00:00').isoformat()
             }
         return None
 
@@ -89,9 +89,9 @@ class SpaceWeatherScaleSensor(Entity):
                     data = await response.json()
                     self._data = data[self._data_selector]
                 else:
-                    _LOGGER.error(f"Error fetching data from {SCALES_URL}")
+                    _LOGGER.error(f'Error fetching data from {SCALES_URL}')
         except aiohttp.ClientError as err:
-            _LOGGER.error(f"Error fetching data from {SCALES_URL}: {err}")
+            _LOGGER.error(f'Error fetching data from {SCALES_URL}: {err}')
 
 
 class SpaceWeatherPredictionSensor(Entity):
@@ -115,7 +115,7 @@ class SpaceWeatherPredictionSensor(Entity):
 
     @property
     def state(self):
-        if self._pred_key == "Scale":
+        if self._pred_key == 'Scale':
             return self._state
         elif self._state is not None:
             try:
@@ -126,15 +126,15 @@ class SpaceWeatherPredictionSensor(Entity):
 
     @property
     def unit_of_measurement(self):
-        if self._pred_key in ["MinorProb", "MajorProb", "Prob"]:
-            return "%"
+        if self._pred_key in ['MinorProb', 'MajorProb', 'Prob']:
+            return '%'
         return None
 
     @property
     def extra_state_attributes(self):
         if self._data:
             return {
-                "timestamp": datetime.fromisoformat(self._data["DateStamp"] + 'T' + self._data["TimeStamp"] + '+00:00').isoformat()
+                'timestamp': datetime.fromisoformat(self._data["DateStamp"] + 'T' + self._data["TimeStamp"] + '+00:00').isoformat()
             }
         return None
 
@@ -147,9 +147,9 @@ class SpaceWeatherPredictionSensor(Entity):
                     self._data = data[self._data_selector]
                     self._state = self._data[self._scale_key][self._pred_key]
                 else:
-                    _LOGGER.error(f"Error fetching data from {SCALES_URL}")
+                    _LOGGER.error(f'Error fetching data from {SCALES_URL}')
         except aiohttp.ClientError as err:
-            _LOGGER.error(f"Error fetching data from {SCALES_URL}: {err}")
+            _LOGGER.error(f'Error fetching data from {SCALES_URL}: {err}')
 
 
 class PlanetaryKIndexSensor(Entity):
@@ -184,10 +184,10 @@ class PlanetaryKIndexSensor(Entity):
     def extra_state_attributes(self):
         if self._data:
             return {
-                "kp_index": float(self._data['kp_index']),
-                "estimated_kp": float(self._data['estimated_kp']),
-                "timestamp": datetime.fromisoformat(self._data['time_tag']).isoformat(),
-                'state_class': "measurement"
+                'kp_index': float(self._data['kp_index']),
+                'estimated_kp': float(self._data['estimated_kp']),
+                'timestamp': datetime.fromisoformat(self._data['time_tag']).isoformat(),
+                'state_class': 'measurement'
             }
         return None
 
@@ -199,6 +199,6 @@ class PlanetaryKIndexSensor(Entity):
                     data = await response.json()
                     self._data = data[-1]
                 else:
-                    _LOGGER.error(f"Error fetching data from {SCALES_URL}")
+                    _LOGGER.error(f'Error fetching data from {SCALES_URL}')
         except aiohttp.ClientError as err:
-            _LOGGER.error(f"Error fetching data from {SCALES_URL}: {err}")
+            _LOGGER.error(f'Error fetching data from {SCALES_URL}: {err}')

@@ -12,12 +12,12 @@ from lib.tecmap import get_tecmaps, plot_tec_map, parse_ionex_datetime
 
 logging.basicConfig(level=logging.INFO)
 
-MQTT_BROKER_HOST = os.getenv('MQTT_BROKER_HOST', "")
+MQTT_BROKER_HOST = os.getenv('MQTT_BROKER_HOST', '')
 MQTT_BROKER_PORT = int(os.getenv('MQTT_BROKER_PORT', 1883))
-MQTT_CLIENT_ID = os.getenv('MQTT_CLIENT_ID', "space_weather")
-MQTT_USERNAME = os.getenv('MQTT_USERNAME', "")
-MQTT_PASSWORD = os.getenv('MQTT_PASSWORD', "")
-MQTT_TOPIC_PREFIX = os.getenv('MQTT_TOPIC_PREFIX', "space-weather")
+MQTT_CLIENT_ID = os.getenv('MQTT_CLIENT_ID', 'space_weather')
+MQTT_USERNAME = os.getenv('MQTT_USERNAME', '')
+MQTT_PASSWORD = os.getenv('MQTT_PASSWORD', '')
+MQTT_TOPIC_PREFIX = os.getenv('MQTT_TOPIC_PREFIX', 'space-weather')
 
 LAT_RANGE_MIN = os.getenv('LAT_RANGE_MIN')
 LAT_RANGE_MAX = os.getenv('LAT_RANGE_MAX')
@@ -36,7 +36,7 @@ if not CDDIS_USERNAME or not CDDIS_PASSWORD:
 client = mqtt.Client(client_id=MQTT_CLIENT_ID)
 if MQTT_USERNAME and MQTT_PASSWORD:
     client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
-client.will_set(MQTT_TOPIC_PREFIX + "/status", payload="Offline", qos=1, retain=True)  # set LWT
+client.will_set(MQTT_TOPIC_PREFIX + '/status', payload='Offline', qos=1, retain=True)
 client.connect(MQTT_BROKER_HOST, port=MQTT_BROKER_PORT)
 client.loop_start()
 
@@ -48,12 +48,12 @@ def publish(topic: str, msg):
         result = client.publish(topic_expanded, msg)
         status = result[0]
         if status == 0:
-            logging.info(f"Sent {msg} to topic {topic_expanded}")
+            logging.info(f'Sent {msg} to topic {topic_expanded}')
             return
         else:
-            logging.warning(f"Failed to send message to topic {topic_expanded}: {result}. Retry {i + 1}/{retries}")
+            logging.warning(f'Failed to send message to topic {topic_expanded}: {result}. Retry {i + 1}/{retries}')
             time.sleep(10)
-    logging.error(f"Failed to send message to topic {topic_expanded}.")
+    logging.error(f'Failed to send message to topic {topic_expanded}.')
 
 
 def main():
