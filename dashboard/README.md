@@ -1,6 +1,6 @@
 ## Install
 1. Copy files from `www` to `config/www`
-2. Dashboard > Edit > 3 button menu > Manage resources
+2. `Dashboard` > `Edit` > 3 button menu > `Manage resources`
 3. Enter these 3 resources:
    ```
    /local/space-weather-24hr-max-card.js?v=1
