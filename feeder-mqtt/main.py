@@ -94,6 +94,10 @@ def update_cache():
 
 
 def publish_cache():
+    """
+    A seperate thread that will send the current value to HA every minute. This
+    seems to help avoid HA reporting "unknown" for the VTEC value.
+    """
     while True:
         latest = cached_data.get()
         if latest is not None:
