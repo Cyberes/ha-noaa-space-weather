@@ -1,4 +1,4 @@
-This is an MQTT sensor to send NOAA space weather data to Home Assistant.
+This is an MQTT sensor to send NOAA space weather data to Home Assistant. Fetching the data requires a login to NASA's EarthData which is done through Selenium and the Chrome browser.
 
 ## Install
 
