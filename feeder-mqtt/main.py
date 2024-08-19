@@ -66,8 +66,10 @@ def main():
         ionex_data = fetch_latest_ionex(CDDIS_USERNAME, CDDIS_PASSWORD)
         avg_tec = None
         for tecmap, epoch in get_tecmaps(ionex_data):
-            if parse_ionex_datetime(epoch).hour == utc_hr:
+            parsed_dt = parse_ionex_datetime(epoch)
+            if parsed_dt.hour == utc_hr:
                 avg_tec = np.mean(plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)]))
+                logging.info(f'Data timestamp: {parsed_dt.isoformat()}')
                 break
         latest = round(avg_tec, 1)
         publish('vtec', latest)
