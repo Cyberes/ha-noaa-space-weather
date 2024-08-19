@@ -75,7 +75,7 @@ class SpaceWeatherCard extends HTMLElement {
           margin-bottom: 16px;
           text-align: center;
         }
-        
+
         .scale-item {
           cursor: pointer;
         }
@@ -157,4 +157,4 @@ class SpaceWeatherCard extends HTMLElement {
     }
 }
 
-customElements.define('space-weather-card-current', SpaceWeatherCard);
+customElements.define('space-weather-current', SpaceWeatherCard);

@@ -73,7 +73,7 @@ def main():
                 break
         latest = round(avg_tec, 1)
         publish('vtec', latest)
-        time.sleep(1800)
+        time.sleep(900)
 
 
 if __name__ == '__main__':

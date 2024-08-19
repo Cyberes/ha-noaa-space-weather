@@ -11,7 +11,7 @@
 To add these custom cards, create a card of the "Manual" type.
 
 ```
-type: space-weather-card-current
-type: space-weather-prediction-card-1day
-type: space-weather-card-24hr-max
+type: space-weather-current
+type: space-weather-prediction-1day
+type: space-weather-24hr-max
 ```

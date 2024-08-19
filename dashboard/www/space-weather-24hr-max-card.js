@@ -75,7 +75,7 @@ class SpaceWeather24hrMaxCard extends HTMLElement {
           margin-bottom: 16px;
           text-align: center;
         }
-        
+
         .scale-item {
           cursor: pointer;
         }
@@ -87,28 +87,28 @@ class SpaceWeather24hrMaxCard extends HTMLElement {
         </div>
         <div class="card-content">
           <div class="scale-container">
-            <div class="scale-item" data-entity-id="sensor.space_weather_scale_r_24hr">
-            <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_r_24hr')}">
-              ${this._getStateValue('sensor.space_weather_scale_r_24hr')}
+            <div class="scale-item" data-entity-id="sensor.space_weather_scale_r_24hr_max">
+            <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_r_24hr_max')}">
+              ${this._getStateValue('sensor.space_weather_scale_r_24hr_max')}
             </div>
               <div class="scale-text">
-                ${this._getStateAttribute('sensor.space_weather_scale_r_24hr', 'text')}
+                ${this._getStateAttribute('sensor.space_weather_scale_r_24hr_max', 'text')}
               </div>
             </div>
-            <div class="scale-item" data-entity-id="sensor.space_weather_scale_s_24hr">
-            <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_s_24hr')}">
-              ${this._getStateValue('sensor.space_weather_scale_s_24hr')}
+            <div class="scale-item" data-entity-id="sensor.space_weather_scale_s_24hr_max">
+            <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_s_24hr_max')}">
+              ${this._getStateValue('sensor.space_weather_scale_s_24hr_max')}
             </div>
               <div class="scale-text">
-                ${this._getStateAttribute('sensor.space_weather_scale_s_24hr', 'text')}
+                ${this._getStateAttribute('sensor.space_weather_scale_s_24hr_max', 'text')}
               </div>
             </div>
-            <div class="scale-item" data-entity-id="sensor.space_weather_scale_g_24hr">
-            <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_g_24hr')}">
-              ${this._getStateValue('sensor.space_weather_scale_g_24hr')}
+            <div class="scale-item" data-entity-id="sensor.space_weather_scale_g_24hr_max">
+            <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_g_24hr_max')}">
+              ${this._getStateValue('sensor.space_weather_scale_g_24hr_max')}
             </div>
               <div class="scale-text">
-                ${this._getStateAttribute('sensor.space_weather_scale_g_24hr', 'text')}
+                ${this._getStateAttribute('sensor.space_weather_scale_g_24hr_max', 'text')}
               </div>
             </div>
           </div>
@@ -154,4 +154,4 @@ class SpaceWeather24hrMaxCard extends HTMLElement {
     }
 }
 
-customElements.define('space-weather-card-24hr-max', SpaceWeather24hrMaxCard);
+customElements.define('space-weather-24hr-max', SpaceWeather24hrMaxCard);

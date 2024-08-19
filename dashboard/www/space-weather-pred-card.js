@@ -2,6 +2,7 @@ class SpaceWeatherPredictionCard extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
+        this._selectedDay = 'today';
     }
 
     setConfig(config) {
@@ -19,7 +20,7 @@ class SpaceWeatherPredictionCard extends HTMLElement {
         this.shadowRoot.innerHTML = `
       <style>
       /* TODO: unify this with the other card */
-      
+
       .prediction-container {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -72,7 +73,7 @@ class SpaceWeatherPredictionCard extends HTMLElement {
           padding: 0 16px 2px 16px;
           text-align: center;
         }
-        
+
         .card-subheader {
           padding: 0 16px 16px 16px;
           margin-bottom: 16px;
@@ -80,7 +81,7 @@ class SpaceWeatherPredictionCard extends HTMLElement {
           font-style: italic;
           font-size: 15px;
         }
-        
+
         .scale-value {
           font-size: 24px;
           font-weight: bold;
@@ -88,57 +89,82 @@ class SpaceWeatherPredictionCard extends HTMLElement {
           padding: 8px;
           border-radius: 4px;
         }
-        
+
         a {
           text-decoration: none;
           color: inherit;
+        }
+
+        .button-container {
+          display: flex;
+          justify-content: center;
+          margin-top: 16px;
+        }
+
+        .day-button {
+          margin: 0 8px;
+          padding: 8px 16px;
+          border: none;
+          border-radius: 4px;
+          background-color: #e5e5e5;
+          cursor: pointer;
+        }
+
+        .day-button.selected {
+          background-color: #3788d8;
+          color: #fff;
         }
       </style>
 
       <ha-card>
         <div class="card-header">Space Weather Predictions</div>
         <div class="card-subheader">
-            For ${this._getStateValue('sensor.space_weather_prediction_date_stamp')}
+            For ${this._getAttribute(`sensor.space_weather_prediction_r_minorprob_${this._selectedDay}`, 'timestamp').split('T')[0]}
         </div>
         <div class="card-content">
           <div class="prediction-container">
-            <div class="prediction-item" data-entity-id="sensor.space_weather_prediction_r_minorprob">
+            <div class="prediction-item" data-entity-id="sensor.space_weather_prediction_r_minorprob_${this._selectedDay}">
               <div class="prediction-label">R1-R2</div>
               <!-- TODO: what happens when "Scale" in JSON is not null? -->
               <!-- TODO: what happens when "Text" in JSON is not null? -->
               <div class="prediction-value">
-                ${Math.round(parseFloat(this._getStateValue('sensor.space_weather_prediction_r_minorprob')))}%
+                ${Math.round(parseFloat(this._getStateValue(`sensor.space_weather_prediction_r_minorprob_${this._selectedDay}`)))}%
               </div>
             </div>
-            <div class="prediction-item" data-entity-id="sensor.space_weather_prediction_r_majorprob">
+            <div class="prediction-item" data-entity-id="sensor.space_weather_prediction_r_majorprob_${this._selectedDay}">
               <div class="prediction-label">R3-R5</div>
               <!-- TODO: what happens when "Scale" in JSON is not null? -->
               <!-- TODO: what happens when "Text" in JSON is not null? -->
               <div class="prediction-value">
-                ${Math.round(parseFloat(this._getStateValue('sensor.space_weather_prediction_r_majorprob')))}%
+                ${Math.round(parseFloat(this._getStateValue(`sensor.space_weather_prediction_r_majorprob_${this._selectedDay}`)))}%
               </div>
             </div>
-            <div class="prediction-item" data-entity-id="sensor.space_weather_prediction_s_prob">
+            <div class="prediction-item" data-entity-id="sensor.space_weather_prediction_s_prob_${this._selectedDay}">
               <div class="prediction-label">S1 or Greater</div>
               <!-- TODO: what happens when "Scale" in JSON is not null? -->
               <!-- TODO: what happens when "Text" in JSON is not null? -->
               <div class="prediction-value">
-                ${Math.round(parseFloat(this._getStateValue('sensor.space_weather_prediction_s_prob')))}%
+                ${Math.round(parseFloat(this._getStateValue(`sensor.space_weather_prediction_s_prob_${this._selectedDay}`)))}%
               </div>
             </div>
             <!-- <div class="prediction-item">
               <div class="prediction-label">S Probability</div>
               <div class="prediction-value">
-                    ${this._getStateValue('sensor.space_weather_prediction_s_scale')}
+                    ${this._getStateValue('sensor.space_weather_prediction_s_scale_today')}
               </div>
             </div> -->
-            <div class="prediction-item" data-entity-id="sensor.space_weather_prediction_g_scale">
+            <div class="prediction-item" data-entity-id="sensor.space_weather_prediction_g_scale_${this._selectedDay}">
               <div class="prediction-label">G Scale</div>
-              <div class="prediction-value scale-value noaa_scale_bg_${this._getStateValue('sensor.space_weather_prediction_g_scale')}">
-                G${this._getStateValue('sensor.space_weather_prediction_g_scale')}
+              <div class="prediction-value scale-value noaa_scale_bg_${this._getStateValue(`sensor.space_weather_prediction_g_scale_${this._selectedDay}`)}">
+                G${this._getStateValue(`sensor.space_weather_prediction_g_scale_${this._selectedDay}`)}
               </div>
             </div>
           </div>
+        <div class="button-container">
+          <button class="day-button ${this._selectedDay === 'today' ? 'selected' : ''}" data-day="today">Today</button>
+          <button class="day-button ${this._selectedDay === '1day' ? 'selected' : ''}" data-day="1day">1 Day</button>
+          <button class="day-button ${this._selectedDay === '2day' ? 'selected' : ''}" data-day="2day">2 Day</button>
+        </div>
         </div>
       </ha-card>
     `;
@@ -172,6 +198,15 @@ class SpaceWeatherPredictionCard extends HTMLElement {
                 this._handleClick(entityId);
             });
         });
+
+        const dayButtons = this.shadowRoot.querySelectorAll('.day-button');
+        dayButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const day = button.dataset.day;
+                this._selectedDay = day;
+                this.render();
+            });
+        });
     }
 
     _handleClick(entityId) {
@@ -181,4 +216,4 @@ class SpaceWeatherPredictionCard extends HTMLElement {
     }
 }
 
-customElements.define('space-weather-prediction-card-1day', SpaceWeatherPredictionCard);
+customElements.define('space-weather-prediction', SpaceWeatherPredictionCard);
