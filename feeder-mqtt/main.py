@@ -58,8 +58,6 @@ def publish(topic: str, msg):
 
 def main():
     while True:
-        # TODO: tick every second and execute runs if it's time.
-        # TODO: get TEC map every 15 min and serve from URL https://services.swpc.noaa.gov/images/animations/natec-ustec/ustec_tec/latest.png?time=1716232652000
         utc_hr = datetime.utcnow().hour
         logging.info('Fetching latest IONEX data')
         logging.info(f'Using hour {utc_hr}')
