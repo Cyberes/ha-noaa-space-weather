@@ -119,7 +119,7 @@ class SpaceWeatherPredictionCard extends HTMLElement {
       <ha-card>
         <div class="card-header">Space Weather Predictions</div>
         <div class="card-subheader">
-            For ${this._getAttribute(`sensor.space_weather_prediction_r_minorprob_${this._selectedDay}`, 'timestamp').split('T')[0]}
+            ${this._getAttribute(`sensor.space_weather_prediction_r_minorprob_${this._selectedDay}`, 'timestamp').split('T')[0]}
         </div>
         <div class="card-content">
           <div class="prediction-container">
