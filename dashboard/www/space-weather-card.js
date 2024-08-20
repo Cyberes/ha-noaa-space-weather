@@ -88,31 +88,28 @@ class SpaceWeatherCard extends HTMLElement {
         <div class="card-content">
           <div class="scale-container">
             <div class="scale-item" data-entity-id="sensor.space_weather_scale_r">
-<!--              <div class="scale-label">R Scale</div>-->
             <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_r')}">
               ${this._getStateValue('sensor.space_weather_scale_r')}
             </div>
-              <div class="scale-text">
+              <!-- <div class="scale-text">
                 ${this._getStateAttribute('sensor.space_weather_scale_r', 'text')}
-              </div>
+              </div> -->
             </div>
             <div class="scale-item" data-entity-id="sensor.space_weather_scale_s">
-<!--              <div class="scale-label">S Scale</div>-->
             <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_s')}">
               ${this._getStateValue('sensor.space_weather_scale_s')}
             </div>
-              <div class="scale-text">
+              <!-- <div class="scale-text">
                 ${this._getStateAttribute('sensor.space_weather_scale_s', 'text')}
-              </div>
+              </div> -->
             </div>
             <div class="scale-item" data-entity-id="sensor.space_weather_scale_g">
-<!--              <div class="scale-label">G Scale</div>-->
             <div class="scale-value noaa_scale_bg_${this._getNumericState('sensor.space_weather_scale_g')}">
               ${this._getStateValue('sensor.space_weather_scale_g')}
             </div>
-              <div class="scale-text">
+              <!-- <div class="scale-text">
                 ${this._getStateAttribute('sensor.space_weather_scale_g', 'text')}
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
