@@ -31,13 +31,13 @@ class SpaceWeatherPredictionCard extends HTMLElement {
 
         .prediction-item {
           text-align: center;
-          /*margin-bottom: 16px;*/
           cursor: pointer;
         }
 
         .prediction-label {
           font-weight: bold;
           margin-bottom: 8px;
+          min-height: 40px;
         }
 
         .prediction-value {
@@ -202,8 +202,7 @@ class SpaceWeatherPredictionCard extends HTMLElement {
         const dayButtons = this.shadowRoot.querySelectorAll('.day-button');
         dayButtons.forEach(button => {
             button.addEventListener('click', () => {
-                const day = button.dataset.day;
-                this._selectedDay = day;
+                this._selectedDay = button.dataset.day;
                 this.render();
             });
         });

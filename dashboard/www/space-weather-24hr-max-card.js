@@ -74,6 +74,7 @@ class SpaceWeather24hrMaxCard extends HTMLElement {
           padding: 16px;
           margin-bottom: 16px;
           text-align: center;
+          line-height: initial;
         }
 
         .scale-item {
