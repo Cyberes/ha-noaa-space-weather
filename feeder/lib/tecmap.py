@@ -1,9 +1,11 @@
 import re
+import time
 from datetime import datetime
 
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
+from dateutil.tz import tzutc, tzlocal
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 """
@@ -32,7 +34,7 @@ def get_tecmaps(ionex: str):
         yield parse_map(tecmap), epoch
 
 
-def plot_tec_map(tecmap, lon_range: list, lat_range: list, timestamp: datetime = None):
+def plot_tec_map(tecmap, lon_range: list, lat_range: list, timestamp_utc: datetime = None):
     proj = ccrs.PlateCarree()
     f, ax = plt.subplots(1, 1, subplot_kw=dict(projection=proj))
 
@@ -54,8 +56,9 @@ def plot_tec_map(tecmap, lon_range: list, lat_range: list, timestamp: datetime =
 
     # Make graph pretty
     ax.coastlines()
-    if timestamp:
-        plt.title(timestamp.strftime('%H:%M %d-%m-%Y'), fontsize=12, y=1.04)
+    if timestamp_utc:
+        timestamp_local = timestamp_utc.replace(tzinfo=tzutc()).astimezone(tzlocal())
+        plt.title(timestamp_local.strftime(f'%H:%M %m-%d-%Y {time.tzname[0]}'), fontsize=12, y=1.04)
     plt.suptitle('Vertical Total Electron Count', fontsize=16, y=0.87)
     divider = make_axes_locatable(ax)
     ax_cb = divider.new_horizontal(size='5%', pad=0.1, axes_class=plt.Axes)

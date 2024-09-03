@@ -2,7 +2,7 @@ import io
 import logging
 import pickle
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import schedule
 from PIL import Image
@@ -17,14 +17,6 @@ LAT_RANGE_MIN = -90
 LAT_RANGE_MAX = 90
 LON_RANGE_MIN = -180
 LON_RANGE_MAX = 180
-
-
-def get_utc_offset():
-    timestamp = time.time()
-    local_time = datetime.fromtimestamp(timestamp)
-    utc_time = datetime.utcfromtimestamp(timestamp)
-    delta = local_time - utc_time
-    return delta.total_seconds() / 3600
 
 
 def main():
@@ -42,7 +34,7 @@ def main():
 
     for tecmap, epoch in ionex_data:
         if epoch.hour == utc_hr:
-            plt = plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)], timestamp=epoch - timedelta(hours=get_utc_offset()))[1]
+            plt = plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)], timestamp_utc=epoch)[1]
             buf = io.BytesIO()
             plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0.1, dpi=110)
             plt.close()
