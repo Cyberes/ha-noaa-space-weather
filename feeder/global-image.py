@@ -44,7 +44,7 @@ def main():
         if epoch.hour == utc_hr:
             plt = plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)], timestamp=epoch - timedelta(hours=get_utc_offset()))[1]
             buf = io.BytesIO()
-            plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0, dpi=110)
+            plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0.1, dpi=110)
             plt.close()
             del plt
 
