@@ -3,7 +3,6 @@ import logging
 import pickle
 import time
 from datetime import datetime
-from typing import List
 
 import schedule
 from PIL import Image
@@ -25,10 +24,11 @@ def main():
     utc_hr = datetime.utcnow().hour
     logging.info(f'Generating plot for hour {utc_hr}')
 
-    ionex_data: List = pickle.loads(redis.get('tecmap_data'))
-    while ionex_data is None:
+    data = redis.get('tecmap_data')
+    while data is None:
         logging.warning('Redis has not been populated yet. Is cache.py running? Sleeping 10s...')
         time.sleep(10)
+    ionex_data = pickle.loads(data)
 
     for tecmap, epoch in ionex_data:
         if epoch.hour == utc_hr:

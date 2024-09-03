@@ -4,7 +4,6 @@ import pickle
 import sys
 import time
 from datetime import datetime
-from typing import List
 
 import numpy as np
 import paho.mqtt.client as mqtt
@@ -67,10 +66,11 @@ def main():
         logging.info('Fetching latest IONEX data')
         logging.info(f'Using hour {utc_hr}')
 
-        ionex_data: List = pickle.loads(redis.get('tecmap_data'))
-        while ionex_data is None:
+        data = redis.get('tecmap_data')
+        while data is None:
             logging.warning('Redis has not been populated yet. Is cache.py running? Sleeping 10s...')
             time.sleep(10)
+        ionex_data = pickle.loads(data)
 
         avg_tec = None
         for tecmap, epoch in ionex_data:
