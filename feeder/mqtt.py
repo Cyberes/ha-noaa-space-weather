@@ -66,6 +66,7 @@ def main():
         while data is None:
             logging.warning('Redis has not been populated yet. Is cache.py running? Sleeping 10s...')
             time.sleep(10)
+            data = redis.get('tecmap_data')
         ionex_data = pickle.loads(data)
 
         utc_hr = datetime.utcnow().hour
