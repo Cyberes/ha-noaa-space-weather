@@ -9,7 +9,7 @@ import numpy as np
 import paho.mqtt.client as mqtt
 from redis import Redis
 
-from lib.tecmap import plot_tec_map, parse_ionex_datetime
+from lib.tecmap import plot_tec_map
 
 logging.basicConfig(level=logging.INFO)
 
@@ -62,22 +62,20 @@ def main():
     redis = Redis(host='localhost', port=6379, db=0)
 
     while True:
-        utc_hr = datetime.utcnow().hour
-        logging.info('Fetching latest IONEX data')
-        logging.info(f'Using hour {utc_hr}')
-
         data = redis.get('tecmap_data')
         while data is None:
             logging.warning('Redis has not been populated yet. Is cache.py running? Sleeping 10s...')
             time.sleep(10)
         ionex_data = pickle.loads(data)
 
+        utc_hr = datetime.utcnow().hour
+        logging.info(f'Using hour {utc_hr}')
+
         avg_tec = None
         for tecmap, epoch in ionex_data:
-            parsed_dt = parse_ionex_datetime(epoch)
-            if parsed_dt.hour == utc_hr:
+            if epoch.hour == utc_hr:
                 avg_tec = np.mean(plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)])[0])
-                logging.info(f'Data timestamp: {parsed_dt.isoformat()}')
+                logging.info(f'Data timestamp: {epoch.isoformat()}')
                 break
         latest = round(avg_tec, 1)
         publish('vtec', latest)
