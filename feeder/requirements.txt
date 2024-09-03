@@ -5,3 +5,7 @@ requests==2.32.3
 matplotlib==3.9.2
 cartopy==0.23.0
 numpy==2.0.1
+redis==5.0.8
+async-timeout==4.0.3
+Pillow
+flask==3.0.3

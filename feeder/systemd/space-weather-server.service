@@ -1,0 +1,15 @@
+[Unit]
+Description=Space Weather Server
+After=network.target
+
+[Service]
+Type=simple
+User=homeassistant
+EnvironmentFile=/etc/secrets/space-weather
+ExecStart=/srv/ha-noaa-space-weather/venv/bin/python /srv/ha-noaa-space-weather/feeder/server.py
+SyslogIdentifier=space-weather-server
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

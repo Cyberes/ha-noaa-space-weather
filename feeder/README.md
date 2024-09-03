@@ -26,10 +26,10 @@ LON_RANGE_MIN=<lower range for lon bounding box> \
 LON_RANGE_MAX=<upper range for lon bounding box> \
 CDDIS_USERNAME=<username> CDDIS_PASSWORD=<password> \
 MQTT_BROKER_HOST="<Home Assistant IP>" MQTT_BROKER_PORT=1883 MQTT_USERNAME="user" MQTT_PASSWORD="<password>" \
-python3 main.py
+python3 mqtt.py
 ```
 
-An example systemd service file is provided.
+Example systemd service files are provided.
 
 ### Home Assistant MQTT Config
 

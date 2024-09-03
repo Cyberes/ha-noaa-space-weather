@@ -39,11 +39,11 @@ def plot_tec_map(tecmap, lon_range: list, lat_range: list):
     # Create arrays of latitudes and longitudes to match the geographical grid of the TEC map data.
     # This is hard coded and should never change.
     lat = np.arange(-87.5, 87.5, 2.5)
-    lon = np.arange(-180, 180, 2.5)
+    lon = np.arange(-180, 180, 5.0)
 
     # Create a mask for the data in the lat/lon range
-    lon_mask = (lon >= lon_range[0]) & (lon <= lon_range[1])
-    lat_mask = (lat >= lat_range[0]) & (lat <= lat_range[1])
+    lon_mask = (lon >= lon_range[0]) & (lon < lon_range[1])
+    lat_mask = (lat >= lat_range[0]) & (lat < lat_range[1])
     mask = np.ix_(lat_mask, lon_mask)
 
     # Select only the data in the lat/lon range
@@ -54,16 +54,13 @@ def plot_tec_map(tecmap, lon_range: list, lat_range: list):
 
     # Make graph pretty
     ax.coastlines()
-    plt.title('VTEC map')
+    plt.title(datetime.now().strftime('%H:%M %d-%m-%Y'), fontsize=12, y=1.04)
+    plt.suptitle('Vertical Total Electron Count', fontsize=16, y=0.87)
     divider = make_axes_locatable(ax)
     ax_cb = divider.new_horizontal(size='5%', pad=0.1, axes_class=plt.Axes)
     f.add_axes(ax_cb)
     cb = plt.colorbar(h, cax=ax_cb)
     plt.rc('text', usetex=True)
     cb.set_label('TECU ($10^{16} \\mathrm{el}/\\mathrm{m}^2$)')
-    plt.show()
-
-    # Deallocate
-    plt.close()
 
     return tecmap_ranged, plt

@@ -1,15 +1,17 @@
 import logging
 import os
+import pickle
 import sys
-import threading
 import time
+import traceback
 from datetime import datetime
+from typing import List
 
 import numpy as np
 import paho.mqtt.client as mqtt
+from redis import Redis
 
-from lib.cddis_fetch import fetch_latest_ionex
-from lib.tecmap import get_tecmaps, plot_tec_map, parse_ionex_datetime
+from lib.tecmap import plot_tec_map, parse_ionex_datetime
 
 logging.basicConfig(level=logging.INFO)
 
@@ -26,6 +28,7 @@ LON_RANGE_MIN = os.getenv('LON_RANGE_MIN')
 LON_RANGE_MAX = os.getenv('LON_RANGE_MAX')
 if not LAT_RANGE_MIN or not LAT_RANGE_MAX or not LON_RANGE_MIN or not LON_RANGE_MAX:
     logging.critical('Must set LAT_RANGE_MIN, LAT_RANGE_MAX, LON_RANGE_MIN, and LON_RANGE_MAX environment variables')
+    print(LAT_RANGE_MIN, LAT_RANGE_MAX, LON_RANGE_MIN, LON_RANGE_MAX)
     sys.exit(1)
 
 CDDIS_USERNAME = os.getenv('CDDIS_USERNAME')
@@ -57,56 +60,29 @@ def publish(topic: str, msg):
     logging.error(f'Failed to send message to topic {topic_expanded}.')
 
 
-class DataCache:
-    def __init__(self):
-        self.value = None
-        self.lock = threading.Lock()
+def main():
+    try:
+        redis = Redis(host='localhost', port=6379, db=0)
 
-    def update(self, new_value):
-        with self.lock:
-            self.value = new_value
-
-    def get(self):
-        with self.lock:
-            return self.value
-
-
-cached_data = DataCache()
-
-
-def update_cache():
-    while True:
-        utc_hr = datetime.utcnow().hour
-        logging.info('Fetching latest IONEX data')
-        logging.info(f'Using hour {utc_hr}')
-        ionex_data = fetch_latest_ionex(CDDIS_USERNAME, CDDIS_PASSWORD)
-        avg_tec = None
-        for tecmap, epoch in get_tecmaps(ionex_data):
-            parsed_dt = parse_ionex_datetime(epoch)
-            if parsed_dt.hour == utc_hr:
-                avg_tec = np.mean(plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)])[0])
-                logging.info(f'Data timestamp: {parsed_dt.isoformat()}')
-                break
-        latest = round(avg_tec, 1)
-        cached_data.update(latest)
-        logging.info(f'Latest value: {latest}')
-        time.sleep(1800)  # 30 minutes
-
-
-def publish_cache():
-    """
-    A seperate thread that will send the current value to HA every minute. This
-    seems to help avoid HA reporting "unknown" for the VTEC value.
-    """
-    while True:
-        latest = cached_data.get()
-        if latest is not None:
+        while True:
+            utc_hr = datetime.utcnow().hour
+            logging.info('Fetching latest IONEX data')
+            logging.info(f'Using hour {utc_hr}')
+            ionex_data: List = pickle.loads(redis.get('tecmap_data'))
+            avg_tec = None
+            for tecmap, epoch in ionex_data:
+                parsed_dt = parse_ionex_datetime(epoch)
+                if parsed_dt.hour == utc_hr:
+                    avg_tec = np.mean(plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)])[0])
+                    logging.info(f'Data timestamp: {parsed_dt.isoformat()}')
+                    break
+            latest = round(avg_tec, 1)
             publish('vtec', latest)
-        time.sleep(60)
+            time.sleep(60)
+    except:
+        logging.critical(traceback.format_exc())
+        sys.exit(1)
 
 
 if __name__ == '__main__':
-    threading.Thread(target=update_cache).start()
-    threading.Thread(target=publish_cache).start()
-    while True:
-        time.sleep(3600)
+    main()

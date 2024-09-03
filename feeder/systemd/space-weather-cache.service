@@ -1,12 +1,13 @@
 [Unit]
-Description=Space Weather VTEC
+Description=Space Weather Cache
 After=network.target
 
 [Service]
 Type=simple
 User=homeassistant
 EnvironmentFile=/etc/secrets/space-weather
-ExecStart=/srv/space-weather/ha-noaa-space-weather/venv/bin/python /srv/space-weather/ha-noaa-space-weather/feeder/main.py
+ExecStart=/srv/ha-noaa-space-weather/venv/bin/python /srv/ha-noaa-space-weather/feeder/cache.py
+SyslogIdentifier=space-weather-cache
 Restart=on-failure
 RestartSec=5s
 
