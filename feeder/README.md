@@ -4,8 +4,9 @@ This is an MQTT sensor to send NOAA space weather data to Home Assistant. Fetchi
 
 1. Create an account at <https://urs.earthdata.nasa.gov>
 2. `pip install -r requirements.txt`
-3. `sudo apt install p7zip-full redis-server`
-4. `sudo systemctl enable --now redis-server`
+3. `sudo apt-get install p7zip-full redis-server`
+4. `sudo apt-get install dvipng texlive-latex-extra texlive-fonts-recommended cm-super`
+5. `sudo systemctl enable --now redis-server`
 
 ### Google Chrome
 
