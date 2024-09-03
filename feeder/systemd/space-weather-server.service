@@ -6,6 +6,7 @@ After=network.target
 Type=simple
 User=homeassistant
 EnvironmentFile=/etc/secrets/space-weather
+WorkingDirectory=/srv/ha-noaa-space-weather/feeder
 ExecStart=/srv/ha-noaa-space-weather/venv/bin/gunicorn --workers 7 --bind 0.0.0.0:5000 server:app --access-logfile '-' --error-logfile '-'
 SyslogIdentifier=space-weather-server
 Restart=on-failure
