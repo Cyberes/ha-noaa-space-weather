@@ -19,7 +19,7 @@ def serve_global_map():
     response = make_response(send_file(buf, mimetype='image/png'))
     expires = datetime.datetime.now()
     expires = expires + datetime.timedelta(minutes=10)
-    response.headers['Cache-Control'] = 'public'
+    response.headers['Cache-Control'] = 'public, max-age=600'
     response.headers['Expires'] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
     return response
 
