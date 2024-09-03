@@ -84,7 +84,7 @@ def update_cache():
         for tecmap, epoch in get_tecmaps(ionex_data):
             parsed_dt = parse_ionex_datetime(epoch)
             if parsed_dt.hour == utc_hr:
-                avg_tec = np.mean(plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)]))
+                avg_tec = np.mean(plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)])[0])
                 logging.info(f'Data timestamp: {parsed_dt.isoformat()}')
                 break
         latest = round(avg_tec, 1)

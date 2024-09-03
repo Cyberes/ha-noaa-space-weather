@@ -4,6 +4,7 @@ from datetime import datetime
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 """
 https://github.com/daniestevez/jupyter_notebooks/blob/master/IONEX.ipynb
@@ -52,17 +53,17 @@ def plot_tec_map(tecmap, lon_range: list, lat_range: list):
     h = plt.imshow(tecmap_ranged, cmap='viridis', vmin=0, vmax=100, extent=(lon_range[0], lon_range[1], lat_range[0], lat_range[1]), transform=proj)
 
     # Make graph pretty
-    # ax.coastlines()
-    # plt.title('VTEC map')
-    # divider = make_axes_locatable(ax)
-    # ax_cb = divider.new_horizontal(size='5%', pad=0.1, axes_class=plt.Axes)
-    # f.add_axes(ax_cb)
-    # cb = plt.colorbar(h, cax=ax_cb)
-    # plt.rc('text', usetex=True)
-    # cb.set_label('TECU ($10^{16} \\mathrm{el}/\\mathrm{m}^2$)')
-    # plt.show()
+    ax.coastlines()
+    plt.title('VTEC map')
+    divider = make_axes_locatable(ax)
+    ax_cb = divider.new_horizontal(size='5%', pad=0.1, axes_class=plt.Axes)
+    f.add_axes(ax_cb)
+    cb = plt.colorbar(h, cax=ax_cb)
+    plt.rc('text', usetex=True)
+    cb.set_label('TECU ($10^{16} \\mathrm{el}/\\mathrm{m}^2$)')
+    plt.show()
 
     # Deallocate
     plt.close()
 
-    return tecmap_ranged
+    return tecmap_ranged, plt
