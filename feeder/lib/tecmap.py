@@ -32,7 +32,7 @@ def get_tecmaps(ionex: str):
         yield parse_map(tecmap), epoch
 
 
-def plot_tec_map(tecmap, lon_range: list, lat_range: list):
+def plot_tec_map(tecmap, lon_range: list, lat_range: list, timestamp: datetime = None):
     proj = ccrs.PlateCarree()
     f, ax = plt.subplots(1, 1, subplot_kw=dict(projection=proj))
 
@@ -54,7 +54,8 @@ def plot_tec_map(tecmap, lon_range: list, lat_range: list):
 
     # Make graph pretty
     ax.coastlines()
-    plt.title(datetime.now().strftime('%H:%M %d-%m-%Y'), fontsize=12, y=1.04)
+    if timestamp:
+        plt.title(timestamp.strftime('%H:%M %d-%m-%Y'), fontsize=12, y=1.04)
     plt.suptitle('Vertical Total Electron Count', fontsize=16, y=0.87)
     divider = make_axes_locatable(ax)
     ax_cb = divider.new_horizontal(size='5%', pad=0.1, axes_class=plt.Axes)

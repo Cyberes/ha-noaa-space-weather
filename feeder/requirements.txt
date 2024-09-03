@@ -9,3 +9,4 @@ redis==5.0.8
 async-timeout==4.0.3
 Pillow
 flask==3.0.3
+schedule==1.2.2

@@ -1,10 +1,11 @@
 import io
 import logging
 import pickle
-import sys
+import time
 from datetime import datetime
 from typing import List
 
+import schedule
 from PIL import Image
 from redis import Redis
 
@@ -17,30 +18,40 @@ LAT_RANGE_MAX = 90
 LON_RANGE_MIN = -180
 LON_RANGE_MAX = 180
 
-redis = Redis(host='localhost', port=6379, db=0)
 
-utc_hr = datetime.utcnow().hour
-logging.info(f'Generating plot for hour {utc_hr}')
+def main():
+    redis = Redis(host='localhost', port=6379, db=0)
 
-ionex_data: List = pickle.loads(redis.get('tecmap_data'))
-if ionex_data is None:
-    logging.critical('Redis has not been populated yet. Is cache.py running?')
-    sys.exit(1)
+    while True:
+        utc_hr = datetime.utcnow().hour
+        logging.info(f'Generating plot for hour {utc_hr}')
 
-for tecmap, epoch in ionex_data:
-    if epoch.hour == utc_hr:
-        plt = plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)])[1]
+        ionex_data: List = pickle.loads(redis.get('tecmap_data'))
+        while ionex_data is None:
+            logging.warning('Redis has not been populated yet. Is cache.py running? Sleeping 10s...')
+            time.sleep(10)
 
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0, dpi=110)
-        plt.close()
-        del plt
+        for tecmap, epoch in ionex_data:
+            if epoch.hour == utc_hr:
+                plt = plot_tec_map(tecmap, [float(LON_RANGE_MIN), float(LON_RANGE_MAX)], [float(LAT_RANGE_MIN), float(LAT_RANGE_MAX)], timestamp=epoch)[1]
 
-        buf.seek(0)
-        img = Image.open(buf)
-        # img = img.resize((img.size[0], 500), Image.LANCZOS)
-        buf = io.BytesIO()
-        img.save(buf, format='PNG')
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0, dpi=110)
+                plt.close()
+                del plt
 
-        redis.set('global_map', buf.getvalue())
-        buf.close()
+                buf.seek(0)
+                img = Image.open(buf)
+                buf = io.BytesIO()
+                img.save(buf, format='PNG')
+
+                redis.set('global_map', buf.getvalue())
+                buf.close()
+
+
+if __name__ == '__main__':
+    main()
+    schedule.every().hour.at(":00").do(main)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
