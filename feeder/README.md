@@ -1,6 +1,8 @@
 This is an MQTT sensor to send NOAA space weather data to Home Assistant. Fetching the data requires a login to NASA's
 EarthData which is done through Selenium and the Chrome browser.
 
+![](dashboard/dashboard.png)
+
 ## Install
 
 1. Create an account at <https://urs.earthdata.nasa.gov>
@@ -58,19 +60,3 @@ vertically from the Earth's surface to the edge of the atmosphere. So essentiall
 difference lying in the specific path along which the measurement is taken.
 
 Updated hourly.
-
-## Home Assistant Dashboard
-
-### Global VTEC Map
-
-1. Enable the [Generic Camera](https://www.home-assistant.io/integrations/generic/) integration.
-2. Set the `Still Image URL` to `http://[server IP]:5000/global`
-3. Set the `Frame Rate (Hz)` to `0.0016666666666667` (sets it to a 10 minute refresh rate).
-4. Create this card on the dashboard:
-    ```yaml
-    type: picture-entity
-    entity: camera.[your entity name]
-    show_state: false
-    show_name: false
-    camera_view: auto
-    ```

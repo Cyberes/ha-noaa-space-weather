@@ -16,7 +16,7 @@ type: space-weather-prediction-1day
 type: space-weather-24hr-max
 ```
 
-## Example VTEC Graph
+## VTEC Graph
 
 In the example dashboard seen in `dashboard.png`, the VTEC graph uses components from [mini-graph-card](https://github.com/kalkih/mini-graph-card). Use the following definition:
 
@@ -48,3 +48,16 @@ color_thresholds:
   - value: 100
     color: '#750305'
 ```
+## Global VTEC Map
+
+1. Enable the [Generic Camera](https://www.home-assistant.io/integrations/generic/) integration.
+2. Set the `Still Image URL` to `http://[server IP]:5000/global`
+3. Set the `Frame Rate (Hz)` to `0.0016666666666667` (sets it to a 10 minute refresh rate).
+4. Create this card on the dashboard:
+    ```yaml
+    type: picture-entity
+    entity: camera.[your entity name]
+    show_state: false
+    show_name: false
+    camera_view: auto
+    ```
