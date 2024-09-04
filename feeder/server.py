@@ -15,7 +15,7 @@ redis_client = redis.Redis(host='localhost', port=6379)
 def serve_global_map():
     global_map_data = redis_client.get('global_map')
     if global_map_data is None:
-        img = Image.new('RGB', (500, 300), color=(255, 255, 255))
+        img = Image.new('RGB', (633, 356), color=(255, 255, 255))
         d = ImageDraw.Draw(img)
         fnt = ImageFont.load_default(size=30)
         w, h = fnt.getbbox(NO_MAP_STR)[2:4]

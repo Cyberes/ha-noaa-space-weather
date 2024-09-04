@@ -12,3 +12,4 @@ cp "$DIR"/*.service /etc/systemd/system
 systemctl daemon-reload
 systemctl enable --now *.service
 systemctl restart *.service
+systemctl status *.service
