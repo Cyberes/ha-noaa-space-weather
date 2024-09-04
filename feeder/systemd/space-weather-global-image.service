@@ -1,6 +1,6 @@
 [Unit]
 Description=Space Weather Global Image Generator
-After=network.target
+After=network.target space-weather-cache.service
 
 [Service]
 Type=simple

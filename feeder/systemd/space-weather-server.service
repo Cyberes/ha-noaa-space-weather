@@ -1,6 +1,6 @@
 [Unit]
 Description=Space Weather Server
-After=network.target
+After=network.target space-weather-cache.service
 
 [Service]
 Type=simple
